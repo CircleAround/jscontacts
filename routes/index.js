@@ -11,4 +11,13 @@ router.get('/about', function(req, res, next) {
   res.render('about', { title: 'About' });
 });
 
+router.get('/contact_form', function(req, res, next) {
+  res.render('contact_form', { title: '連絡先フォーム' });
+});
+
+router.post('/contacts', function(req, res, next) {
+  console.log('posted', req.body);
+  res.redirect('/');
+});
+
 module.exports = router;

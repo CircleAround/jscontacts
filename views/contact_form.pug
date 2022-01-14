@@ -1,0 +1,12 @@
+extends layout
+
+block content
+  h1 新しい連絡先の追加
+
+  form(action='/contacts', method='post')
+    div
+      label(for='name') 名前
+      input#name(type='text', name='name')
+
+    div.actions
+      input(type='submit', value='送信')  

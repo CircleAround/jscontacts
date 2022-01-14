@@ -10,3 +10,11 @@ a {
 h1 {
   color: blue;
 }
+
+label {
+  margin-right: 1em;
+}
+
+form .actions {
+  margin-top: .5em;
+}
