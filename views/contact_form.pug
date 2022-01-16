@@ -3,14 +3,20 @@ extends layout
 block content
   h1 新しい連絡先の追加
 
-  form(action='/contacts', method='post')
-    div
-      label(for='name') 名前
-      input#name(type='text', name='name')
+  - if(err)
+    - const errors = err.errors
+    ul.errors
+      each error in errors
+        li= error.message
 
-    div
+  form(action='/contacts', method='post')
+    div.field
+      label(for='name') 名前
+      input#name(type='text', name='name', value=contact.name)
+
+    div.field
       label(for='email') Email
-      input#email(type='text', name='email')
+      input#email(type='text', name='email', value=contact.email)
 
     div.actions
       input(type='submit', value='送信')  
