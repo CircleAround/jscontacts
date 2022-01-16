@@ -5,7 +5,11 @@ module.exports = {
     await queryInterface.addColumn(
       'Contacts',
       'email',
-      Sequelize.STRING
+      { 
+        type: Sequelize.STRING,
+        allowNull: false,
+        unique: true,
+      }
     );    
   },
 
