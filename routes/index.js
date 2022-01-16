@@ -4,9 +4,11 @@ const models = require('../models');
 const { ValidationError } = require('sequelize');
 
 router.get('/', async function(req, res, next) {
+  req.session.view_counter = (req.session.view_counter || 0) + 1;
+
   const now = new Date();
   const contacts = await models.Contact.findAll();
-  res.render('index', { title: '連絡帳', now: now, contacts: contacts });
+  res.render('index', { title: '連絡帳', now, contacts, view_counter: req.session.view_counter });
 });
 
 router.get('/about', function(req, res, next) {
