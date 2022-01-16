@@ -2,10 +2,10 @@ const express = require('express');
 const router = express.Router();
 const models = require('../models');
 
-/* GET home page. */
-router.get('/', function(req, res, next) {
+router.get('/', async function(req, res, next) {
   const now = new Date();
-  res.render('index', { title: 'Hello World', now: now });
+  const contacts = await models.Contact.findAll();
+  res.render('index', { title: '連絡帳', now: now, contacts: contacts });
 });
 
 router.get('/about', function(req, res, next) {

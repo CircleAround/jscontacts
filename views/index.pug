@@ -2,11 +2,21 @@ extends layout
 
 block content
   h1= title
-  p Welcome to #{title}
-  p 現在時刻 #{now}
 
   div 
     a(href="/contact_form") 連絡先の追加
 
+  div 
+    table
+      tr 
+        th 名前
+        th Email
+
+      each contact in contacts
+        tr
+          td=contact.name 
+          td=contact.email  
+
   footer
-    a(href="/about") このサービスについて
+    a(href="/about") このサービスについて  
+    p アクセス時刻 #{now}
