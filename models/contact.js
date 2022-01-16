@@ -14,8 +14,21 @@ module.exports = (sequelize, DataTypes) => {
     }
   };
   Contact.init({
-    name: DataTypes.STRING,
-    email: DataTypes.STRING,
+    name: {
+      type: DataTypes.STRING,
+      validate: {
+        notEmpty: true,
+        len: [0, 20],
+      }
+    },
+    email: {
+      type: DataTypes.STRING,
+      validate: {
+        notEmpty: true,
+        isEmail: true,
+        len: [0, 100],
+      }
+    }
   }, {
     sequelize,
     modelName: 'Contact',
