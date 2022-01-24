@@ -2,7 +2,11 @@ const models = require('../models');
 
 async function createContact(){
   const num = (new Date()).getTime();
-  const contact = models.Contact.build({ name: `test${num}`, email: `${num}@example.com` });
+  const contact = models.Contact.build({
+    name: `test${num}`, 
+    email: `${num}@example.com`, 
+    categoryId: 1
+  });
   console.log(contact);
   await contact.save();
 }
