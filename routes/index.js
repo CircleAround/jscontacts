@@ -27,17 +27,17 @@ router.get('/contacts/:id/edit', async function(req, res, next) {
 });
 
 router.post('/contacts', async function(req, res, next) {
+  const fields = ['name', 'email'];
   try {
     console.log('posted', req.body);
     if(req.body.id) {
       const contact = await models.Contact.findByPk(req.body.id);
-      contact.name = req.body.name;
-      contact.email = req.body.email;
-      await contact.save();
+      contact.set(req.body);
+      await contact.save({ fields });
       req.session.flashMessage = `「${contact.name}」さんを更新しました`;
     } else {
-      const contact = models.Contact.build({ name: req.body.name, email: req.body.email });
-      await contact.save();
+      const contact = models.Contact.build(req.body);
+      await contact.save({ fields });
       req.session.flashMessage = `新しい連絡先として「${contact.name}」さんを保存しました`;
     }
     res.redirect('/');
