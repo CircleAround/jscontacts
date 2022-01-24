@@ -1,13 +1,14 @@
 const models = require('../models');
 
 async function listContacts(){
-  const contacts = await models.Contact.findAll();
+  const contacts = await models.Contact.findAll({ include: 'category' });
   // console.log(contacts);
   console.log(contacts.map((contact) => { return contact.name; }));
 
   for(const contact of contacts) {
     // Contactモデルのインスタンスから、親のCategoryを取り出す
-    const category = await contact.getCategory();
+    // const category = await contact.getCategory();
+    const category = contact.category; // Eager Loadingによって既に取得済み
     if(category) {
       console.log('カテゴリのある連絡先')
       console.log(category.name, contact.name);
