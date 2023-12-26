@@ -60,7 +60,8 @@ router.post('/contacts', async function(req, res, next) {
   } catch (err) {
     if(err instanceof ValidationError) {
       const title = (req.body.id) ? '連絡先の更新' : '連絡先の作成';
-      res.render(`contact_form`, { title, contact: req.body, err: err });
+      const categories = await models.Category.findAll();
+      res.render(`contact_form`, { title, contact: req.body, err: err, categories });
     } else {
       throw err;
     }
