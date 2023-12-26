@@ -43,10 +43,16 @@ router.post('/contacts', async function(req, res, next) {
     if(req.body.id) {
       const contact = await models.Contact.findByPk(req.body.id);
       contact.set(req.body);
+      if(contact.categoryId == '') {
+        contact.categoryId = null;
+      }
       await contact.save({ fields });
       req.session.flashMessage = `「${contact.name}」さんを更新しました`;
     } else {
       const contact = models.Contact.build(req.body);
+      if(contact.categoryId == '') {
+        contact.categoryId = null;
+      }
       await contact.save({ fields });
       req.session.flashMessage = `新しい連絡先として「${contact.name}」さんを保存しました`;
     }
