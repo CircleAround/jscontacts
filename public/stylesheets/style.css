@@ -44,3 +44,7 @@ table, th, td {
 th, td {
   padding: .5em 1em;
 }
+
+footer {
+  margin-top: 3em;
+}

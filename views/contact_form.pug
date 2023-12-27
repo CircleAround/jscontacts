@@ -20,5 +20,12 @@ block content
       label(for='email') Email
       input#email(type='text', name='email', value=contact.email)
 
+    div.field   
+      label(for='category') カテゴリ
+      select#category(type='text', name='categoryId')
+        option(value="", selected=contact.categoryId === null) なし
+        each category in categories
+          option(value=category.id, selected=contact.categoryId === category.id)=category.name
+
     div.actions
       input(type='submit', value='送信')  
