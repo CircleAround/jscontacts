@@ -1,7 +1,5 @@
-'use strict';
-const {
-  Model
-} = require('sequelize');
+"use strict";
+const { Model, Op } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class Contact extends Model {
     /**
@@ -11,30 +9,68 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       this.Category = this.belongsTo(models.Category, {
-        foreignKey: 'categoryId',
-        as: 'category'
+        foreignKey: "categoryId",
+        as: "category",
       });
     }
-  };
-  Contact.init({
-    name: {
-      type: DataTypes.STRING,
-      validate: {
-        notEmpty: true,
-        len: [0, 20],
-      }
-    },
-    email: {
-      type: DataTypes.STRING,
-      validate: {
-        notEmpty: true,
-        isEmail: true,
-        len: [0, 100],
-      }
+
+    static async latest(limit = 3) {
+      return await Contact.findAll({ order: [["id", "DESC"]], limit });
     }
-  }, {
-    sequelize,
-    modelName: 'Contact',
-  });
+
+    static getNow() {
+      return new Date();
+    }
+
+    static async search({ name, email, sinceDaysAgo }) {
+      const where = {};
+
+      if (name) {
+        where.name = { [Op.substring]: name };
+      }
+
+      if (email) {
+        where.email = { [Op.substring]: email };
+      }
+
+      if (sinceDaysAgo) {
+        const since = this.getNow()
+        since.setDate(since.getDate() - sinceDaysAgo);
+        where.createdAt = { [Op.gte]: since };
+      }
+
+      return await Contact.findAll({
+        order: [["id", "DESC"]],
+        where,
+      });
+    }
+
+    isExample() {
+      return this.email.endsWith("@example.com");
+    }
+  }
+  Contact.init(
+    {
+      name: {
+        type: DataTypes.STRING,
+        validate: {
+          notEmpty: true,
+          len: [0, 20],
+        },
+      },
+      email: {
+        type: DataTypes.STRING,
+        validate: {
+          notEmpty: true,
+          isEmail: true,
+          len: [0, 100],
+        },
+      },
+    },
+    {
+      sequelize,
+      modelName: "Contact",
+    }
+  );
   return Contact;
 };

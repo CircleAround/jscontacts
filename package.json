@@ -3,7 +3,10 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "npx nodemon -e js,json,pug ./bin/www"
+    "start": "npx nodemon -e js,json,pug ./bin/www",
+    "test": "jest",
+    "db:create:test": "NODE_ENV=test npx sequelize-cli db:create",
+    "db:migrate:test": "NODE_ENV=test npx sequelize-cli db:migrate"
   },
   "dependencies": {
     "cookie-parser": "~1.4.4",
@@ -17,6 +20,7 @@
     "sequelize": "^6.13.0"
   },
   "devDependencies": {
+    "jest": "^29.7.0",
     "nodemon": "^2.0.15",
     "sequelize-cli": "^6.3.0"
   }
