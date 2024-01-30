@@ -1,7 +1,7 @@
 const { Contact, sequelize } = require("../../models");
 
-afterEach(async () => {
-  await Contact.destroy({ truncate: true });
+test("1 + 5 = 6", () => {
+  expect(1 + 5).toBe(6);
 });
 
 afterAll(async () => {
@@ -11,7 +11,7 @@ afterAll(async () => {
 describe("validations", () => {
   test("validであること", async () => {
     const contact = Contact.build({ name: "test", email: "test@example.com" });
-    await expect(contact.validate()).resolves;
+    await expect(contact.validate()).resolves.toBeTruthy();
   });
 
   test("nameが空文字ならバリデーションエラーになること", async () => {
@@ -65,6 +65,10 @@ describe(".latest", () => {
     ]);
   });
 
+  afterEach(async () => {
+    await Contact.destroy({ truncate: true });
+  });
+
   test("引数なしなら新しい順に3件取得できること", async () => {
     const contacts = await Contact.latest();
 
@@ -87,8 +91,8 @@ describe(".search", () => {
   beforeEach(async () => {
     await Contact.bulkCreate([
       {
-        name: "test",
-        email: "test@example.com",
+        name: "west3",
+        email: "west3-2@example.com",
         createdAt: new Date(2020, 10, 1),
       },
       {
@@ -102,80 +106,67 @@ describe(".search", () => {
         createdAt: new Date(2020, 10, 29),
       },
       {
-        name: "test3-2",
+        name: "test3-2", // あえて test3-2 を用意しています
         email: "test3-2@example.com",
         createdAt: new Date(2020, 10, 31),
       },
       {
         name: "test5",
         email: "test5@example.com",
-        createdAt: new Date(2020, 10, 27),
+        createdAt: new Date(2020, 10, 27), // あえて 作成日時を古くしています
       },
     ]);
   });
 
-  describe("name", () => {
-    test("名前でlike検索したレコードが取れること", async () => {
-      const contacts = await Contact.search({ name: "est" });
-
-      expect(contacts.length).toBe(5);
-      expect(contacts[0].name).toBe("test5");
-      expect(contacts[1].name).toBe("test3-2");
-      expect(contacts[2].name).toBe("test3");
-      expect(contacts[3].name).toBe("test2");
-      expect(contacts[4].name).toBe("test");
-    });
-
-    test("名前でlike検索したレコードが取れること", async () => {
-      const contacts = await Contact.search({ name: "test3" });
-
-      expect(contacts.length).toBe(2);
-      expect(contacts[0].name).toBe("test3-2");
-      expect(contacts[1].name).toBe("test3");
-    });
+  afterEach(async () => {
+    await Contact.destroy({ truncate: true });
   });
 
-  describe("email", () => {
-    test("emailでlike検索したレコードが取れること", async () => {
-      const contacts = await Contact.search({ email: "est" });
+  test("nameでlike検索したレコードが取れること", async () => {
+    const contacts = await Contact.search({ name: "est3" });
 
-      expect(contacts.length).toBe(5);
-      expect(contacts[0].name).toBe("test5");
-      expect(contacts[1].name).toBe("test3-2");
-      expect(contacts[2].name).toBe("test3");
-      expect(contacts[3].name).toBe("test2");
-      expect(contacts[4].name).toBe("test");
-    });
-
-    test("emailでlike検索したレコードが取れること", async () => {
-      const contacts = await Contact.search({ email: "2@example" });
-
-      expect(contacts.length).toBe(2);
-      expect(contacts[0].name).toBe("test3-2");
-      expect(contacts[1].name).toBe("test2");
-    });
+    expect(contacts.length).toBe(3);
+    expect(contacts[0].name).toBe("test3-2");
+    expect(contacts[1].name).toBe("test3");
+    expect(contacts[2].name).toBe("west3");
   });
 
-  describe("sinceDaysAgo", () => {
-    test("sinceDaysAgoの日数分以前から作成されたレコードが取れること", async () => {
-      const contacts = await Contact.search(
-        { sinceDaysAgo: 3 },
-        new Date(2020, 11, 1)
-      );
+  test("emailでlike検索したレコードが取れること", async () => {
+    const contacts = await Contact.search({ email: "2@example" });
 
-      expect(contacts.length).toBe(3);
-      expect(contacts[0].name).toBe("test3-2");
-      expect(contacts[1].name).toBe("test3");
-      expect(contacts[2].name).toBe("test2");
-    });
+    expect(contacts.length).toBe(3);
+    expect(contacts[0].name).toBe("test3-2");
+    expect(contacts[1].name).toBe("test2");
+    expect(contacts[2].name).toBe("west3");
+  });
+
+  test("sinceDaysAgoの日数分以前から作成されたレコードが取れること", async () => {
+    Contact.getNow = jest.fn(() => new Date(2020, 11, 1));
+    const contacts = await Contact.search({ sinceDaysAgo: 3 });
+
+    expect(contacts.length).toBe(3);
+    expect(contacts[0].name).toBe("test3-2");
+    expect(contacts[1].name).toBe("test3");
+    expect(contacts[2].name).toBe("test2");
   });
 
   describe("複合的な検索", () => {
+    test("name、email の2要素で絞り込まれた結果が取得できること", async () => {
+      const contacts = await Contact.search({ name: "3", email: "2@example" });
+
+      expect(contacts.length).toBe(2);
+      expect(contacts[0].name).toBe("test3-2");
+      expect(contacts[1].name).toBe("west3");
+    });
+
     test("name、email, sinceDaysAgo の3要素で絞り込まれた結果が取得できること", async () => {
-      const contacts = await Contact.search(
-        { name: "3", email: "2@example", sinceDaysAgo: 3 },
-        new Date(2020, 11, 1)
-      );
+      Contact.getNow = jest.fn(() => new Date(2020, 11, 1));
+
+      const contacts = await Contact.search({
+        name: "3",
+        email: "2@example",
+        sinceDaysAgo: 3,
+      });
 
       expect(contacts.length).toBe(1);
       expect(contacts[0].name).toBe("test3-2");

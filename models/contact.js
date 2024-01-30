@@ -18,7 +18,11 @@ module.exports = (sequelize, DataTypes) => {
       return await Contact.findAll({ order: [["id", "DESC"]], limit });
     }
 
-    static async search({ name, email, sinceDaysAgo }, baseDate = new Date()) {
+    static getNow() {
+      return new Date();
+    }
+
+    static async search({ name, email, sinceDaysAgo }) {
       const where = {};
 
       if (name) {
@@ -30,7 +34,7 @@ module.exports = (sequelize, DataTypes) => {
       }
 
       if (sinceDaysAgo) {
-        const since = new Date(baseDate);
+        const since = this.getNow()
         since.setDate(since.getDate() - sinceDaysAgo);
         where.createdAt = { [Op.gte]: since };
       }
